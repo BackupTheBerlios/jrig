@@ -1,0 +1,40 @@
+Java Relational Information Generator (jrig)
+===========================
+
+The project goal is to design and implement a database sample data generator.
+
+--------------------
+Motivation
+--------------------
+
+In order to perform performance/load/stress test, it is a
+pre-requisite to work against a database with substantial amount of
+data that adheres to the same explicit database constraints and
+implicit business rules as real production data.
+
+It is however tremdously tedious, if not impossible, to create tens of
+thousands record by hand. This is a job better left to computer.
+
+--------------------
+Implementation Language
+--------------------
+
+It is to be implemented in Java and using JDBC for database access.
+
+--------------------
+Similar Products
+--------------------
+
+DBMonster (http://dbmonster.kernelpanic.pl/) is the only similar open source
+project I am aware of.
+
+Other similar products are commercial products and most use ODBC.
+
+The main differentiation points are
+
+1. This project is going to offer a more sophiscated data generation
+model than DBMonster's column based model.  
+
+2. Domain Language based approach to generation rule specification rather than XML based specification.
+
+3. More data fill modes then DBMonster's offering.
