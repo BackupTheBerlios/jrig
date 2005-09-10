@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+$Id: build.xml,v 1.4 2005/09/10 19:58:05 oone Exp $
+-->
+
 <project name="jrig" default="compile" basedir="..">
 
     <!-- a env.property.sample is checked in for your convenience         -->
@@ -8,63 +12,99 @@
     <!-- a build.property.sample is checked in for your convenience       -->
     <property file="build/build.properties"/>
 
+    <!-- defining project related meta data --> 
+    <property file="build/project.properties"/>
+    
+    <taskdef 
+        name="junit"
+        classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" />
+    
     <!-- ================================================================ -->
-    <!-- Defining global properties                                       -->
+    <!-- Defining Project Directories                                     -->
     <!-- ================================================================ -->
 
     <property name="conf.dir" value="conf" />
-    <property name="src.dir" value="src" />
-    <property name="lib.dir" value="lib" />
     <property name="depcache.dir" value="depcache" />
+    <property name="lib.dir" value="lib" />
+    <property name="src.dir" value="src" />
     
     <property name="out.dir" value="out" />
     <property name="out.classes.dir" value="${out.dir}/classes" />
     <property name="out.javadoc.dir" value="${out.dir}/javadoc" />
     
-    <property name="jar.name" value="jrig.jar" />
     <property name="dist.dir" value="dist" />
     <property name="dist.doc.dir" value="${dist.dir}/doc" />
     <property name="dist.javadoc.dir" value="${dist.doc.dir}/api" />
+
+    <!-- ================================================================ -->
+    <!-- Defining Project Properties                                      -->
+    <!-- ================================================================ -->
+
+    <property 
+        name="jrig.jar" 
+        value="${project.name}-${version.major}.${version.minor}.${version.revision}-${version.status}.jar" />
     
     <!-- ================================================================ -->
-    <!-- Defining classpaths                                              -->
+    <!-- Defining Library Dependency                                      -->
+    <!-- ================================================================ -->
+
+    <property name="junit.jar" value="junit-3.8.1.jar" />
+    <property name="log4j.jar" value="log4j-1.2.12.jar" />
+    <property name="jython.jar" value="jython-2.1.jar" />
+   
+    <property name="hsqldb.jar" value="hsqldb-1.8.0.2.jar" />
+       
+    <!-- ================================================================ -->
+    <!-- Defining Classpaths                                              -->
     <!-- ================================================================ -->
 
     <!--
-        All liberaries required to compile BACKEND.
+        Minimum liberaries required to run JRIG. 
+        Those libraries are included in JRIG binary distribution.
+    -->
+    <path id="classpath.dist">
+        <fileset dir="${lib.dir}">
+            <include name="${jython.jar}" />
+            <include name="${log4j.jar}" />
+        </fileset>
+    </path>
+    
+    <!--
+       Minimum liberaries required to compile JRIG, including unit test.
     -->
     <path id="classpath.compile">
+        <path refid="classpath.dist" />
+
         <fileset dir="${lib.dir}">
-            <include name="junit-3.8.1.jar" />
+            <include name="${junit.jar}" />
         </fileset>
     </path>
 
     <!--
-        Classpath required to run BACKEND unittest.
-        This enables us to run unittest without deploy to the server.
+        Classpath required to run unit test.
     -->
     <path id="classpath.test">
-            <path refid="classpath.compile" />
+        <path refid="classpath.compile" />
 
-            <fileset dir="${lib.dir}" >
-                <!--
-                    the jdbc driver is not included in the final distribution
-                -->
-                <include name="classes12.jar" />
-            </fileset>
+        <fileset dir="${lib.dir}" >
+            <include name="${hsqldb.jar}" />
+        </fileset>
 
-            <pathelement location="${conf.dir}" />
-            <pathelement location="${out.classes.dir}" />
+        <pathelement location="${conf.dir}" />
+        <pathelement location="${out.classes.dir}" />
     </path>
 
-    <target name="unittest"
+    <!-- ================================================================ -->
+    <!-- Development Related Targets                                      -->
+    <!-- ================================================================ -->
+    
+    <target 
+        name="unittest"
         description="Running unit test"
         depends="compile">
 
-        <taskdef name="junit"
-            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" />
-        
-        <junit printsummary="yes"
+        <junit 
+            printsummary="yes"
             haltonfailure="yes"
             fork="true" maxmemory="256m">
 
@@ -79,8 +119,9 @@
         </junit>
     </target>
 
-    <target name="jar"
-        description="Create jrig jar"
+    <target 
+        name="jar"
+        description="Create jrig binary jar"
         depends="clean, compile">
 
         <copy todir="${out.classes.dir}" >
@@ -89,18 +130,20 @@
             </fileset>
         </copy>
 
-        <jar jarfile="${out.dir}/${jar.name}"
+        <jar jarfile="${out.dir}/${jrig.jar}"
             basedir="${out.classes.dir}">
 
             <exclude name="**/*Test.class" />
         </jar>
     </target>
 
-    <target name="compile"
+    <target 
+        name="compile"
         description="Compile"
         depends="-prepare.compile">
 
-        <javac srcdir="${src.dir}"
+        <javac 
+            srcdir="${src.dir}"
             destdir="${out.classes.dir}"
             debug="${debug}"
             deprecation="${deprecation}"
@@ -118,20 +161,23 @@
         </copy>
     </target>
     
-    <target name="-prepare.compile"
+    <target 
+        name="-prepare.compile"
         description="Check for out-of-date class files">
 
         <delete dir="${out.dir}" />
         <mkdir dir="${out.classes.dir}" />
 
-        <depend srcdir="${src.dir}"
+        <depend 
+            srcdir="${src.dir}"
             destdir="${out.classes.dir}"
             cache="${depcache.dir}"
             closure="yes"/>
     </target>
    
-    <target name="javadoc"
-         description="Generate Javadoc">
+    <target
+        name="javadoc"
+        description="Generate Javadoc">
 
          <delete dir="${out.javadoc.dir}" />
          <mkdir dir="${out.javadoc.dir}" />
@@ -143,7 +189,8 @@
              source="1.4"/>
     </target>
     
-    <target name="clean"
+    <target 
+        name="clean"
         description="Clean generated artifacts">
         <!-- Remove the out directory -->
         <delete dir="${out.dir}"/>
