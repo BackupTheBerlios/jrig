@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<<<<<<< build.xml
+ * $Id: build.xml,v 1.2 2005/09/10 17:42:24 oone Exp $
+=======
+ * $Id: build.xml,v 1.2 2005/09/10 17:42:24 oone Exp $
+>>>>>>> 1.103
+ -->
+
+<project name="jrig" default="compile" basedir="..">
+
+    <!-- a env.property.sample is checked in for your convenience         -->
+    <property file="build/env.properties"/>
+
+    <!-- a build.property.sample is checked in for your convenience       -->
+    <property file="build/build.properties"/>
+
+    <!-- ================================================================ -->
+    <!-- Defining global properties                                       -->
+    <!-- ================================================================ -->
+
+    <property name="conf.dir" value="conf" />
+    <property name="src.dir" value="src" />
+    <property name="lib.dir" value="lib" />
+    <property name="depcache.dir" value="depcache" />
+    
+    <property name="out.dir" value="out" />
+    <property name="out.classes.dir" value="${out.dir}/classes" />
+    <property name="out.javadoc.dir" value="${out.dir}/javadoc" />
+    
+    <property name="jar.name" value="jrig.jar" />
+    <property name="dist.dir" value="dist" />
+    <property name="dist.doc.dir" value="${dist.dir}/doc" />
+    <property name="dist.javadoc.dir" value="${dist.doc.dir}/api" />
+    
+    <!-- ================================================================ -->
+    <!-- Defining classpaths                                              -->
+    <!-- ================================================================ -->
+
+    <!--
+        All liberaries required to compile BACKEND.
+    -->
+    <path id="classpath.compile">
+        <fileset dir="${lib.dir}">
+            <include name="junit-3.8.1.jar" />
+        </fileset>
+    </path>
+
+    <!--
+        Classpath required to run BACKEND unittest.
+        This enables us to run unittest without deploy to the server.
+    -->
+    <path id="classpath.test">
+            <path refid="classpath.compile" />
+
+            <fileset dir="${lib.dir}" >
+                <!--
+                    the jdbc driver is not included in the final distribution
+                -->
+                <include name="classes12.jar" />
+            </fileset>
+
+            <pathelement location="${conf.dir}" />
+            <pathelement location="${out.classes.dir}" />
+    </path>
+
+    <target name="unittest"
+        description="Running unit test"
+        depends="compile">
+
+        <taskdef name="junit"
+            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" />
+        
+        <junit printsummary="yes"
+            haltonfailure="yes"
+            fork="true" maxmemory="256m">
+
+            <formatter type="brief" usefile="true"/>
+            <classpath refid="classpath.test" />
+
+            <batchtest>
+                <fileset dir="${out.classes.dir}">
+                    <include name="**/*Test.class" />    
+                </fileset>
+            </batchtest>     
+        </junit>
+    </target>
+
+    <target name="jar"
+        description="Create jrig jar"
+        depends="clean, compile">
+
+        <copy todir="${out.classes.dir}" >
+            <fileset dir="${conf.dir}">
+                <include name="*.xml" />
+            </fileset>
+        </copy>
+
+        <jar jarfile="${out.dir}/${jar.name}"
+            basedir="${out.classes.dir}">
+
+            <exclude name="**/*Test.class" />
+        </jar>
+    </target>
+
+    <target name="compile"
+        description="Compile"
+        depends="-prepare.compile">
+
+        <javac srcdir="${src.dir}"
+            destdir="${out.classes.dir}"
+            debug="${debug}"
+            deprecation="${deprecation}"
+            source="1.4">
+
+            <include name="**/*.java" />
+            <classpath refid="classpath.compile" />
+        </javac>
+            
+        <copy todir="${out.classes.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.xml" />
+                <include name="**/*.properties" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="-prepare.compile"
+        description="Check for out-of-date class files">
+
+        <delete dir="${out.dir}" />
+        <mkdir dir="${out.classes.dir}" />
+
+        <depend srcdir="${src.dir}"
+            destdir="${out.classes.dir}"
+            cache="${depcache.dir}"
+            closure="yes"/>
+    </target>
+   
+    <target name="javadoc"
+         description="Generate Javadoc">
+
+         <delete dir="${out.javadoc.dir}" />
+         <mkdir dir="${out.javadoc.dir}" />
+
+         <javadoc
+             packagenames="de.berlios.jrig.**.*"
+             sourcepath="${src.dir}"
+             destdir="${out.javadoc.dir}"
+             source="1.4"/>
+    </target>
+    
+    <target name="clean"
+        description="Clean generated artifacts">
+        <!-- Remove the out directory -->
+        <delete dir="${out.dir}"/>
+
+        <!-- Remove the dist directory -->
+        <delete dir="${dist.dir}"/>
+    </target>
+    
+    <target name="cleanall" 
+        description="clean all generated artifacts"
+        depends="clean">
+        
+        <!-- Deletes all backup files -->
+        <delete dir="${depcache.dir}"/>
+    </target>
+</project>
