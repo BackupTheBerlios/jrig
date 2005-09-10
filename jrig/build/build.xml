@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-$Id: build.xml,v 1.4 2005/09/10 19:58:05 oone Exp $
+$Id: build.xml,v 1.5 2005/09/10 20:46:57 oone Exp $
 -->
 
 <project name="jrig" default="compile" basedir="..">
@@ -127,12 +127,12 @@ $Id: build.xml,v 1.4 2005/09/10 19:58:05 oone Exp $
         <copy todir="${out.classes.dir}" >
             <fileset dir="${conf.dir}">
                 <include name="*.xml" />
+                <include name="*.properties" /> 
             </fileset>
         </copy>
 
         <jar jarfile="${out.dir}/${jrig.jar}"
             basedir="${out.classes.dir}">
-
             <exclude name="**/*Test.class" />
         </jar>
     </target>
@@ -152,11 +152,25 @@ $Id: build.xml,v 1.4 2005/09/10 19:58:05 oone Exp $
             <include name="**/*.java" />
             <classpath refid="classpath.compile" />
         </javac>
-            
+        
+        <!-- substitute project version -->
+        <copy 
+            todir="${out.classes.dir}"
+            overwrite="true">
+            <fileset dir="${src.dir}" includes="**/version.properties"/>
+            <filterset>
+                <filter token="version.major" value="${version.major}"/>
+                <filter token="version.minor" value="${version.minor}"/>
+                <filter token="version.revision" value="${version.revision}"/>
+                <filter token="version.status" value="${version.status}"/>
+            </filterset>
+        </copy>
+        
         <copy todir="${out.classes.dir}">
             <fileset dir="${src.dir}">
                 <include name="**/*.xml" />
                 <include name="**/*.properties" />
+                <exclude name="**/version.properties" />
             </fileset>
         </copy>
     </target>
