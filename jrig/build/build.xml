@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-<<<<<<< build.xml
- * $Id: build.xml,v 1.2 2005/09/10 17:42:24 oone Exp $
-=======
- * $Id: build.xml,v 1.2 2005/09/10 17:42:24 oone Exp $
->>>>>>> 1.103
- -->
 
 <project name="jrig" default="compile" basedir="..">
 
