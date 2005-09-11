@@ -1,5 +1,5 @@
 /*
- * $Id: ConnectionPool.java,v 1.2 2005/09/11 08:13:16 oone Exp $
+ * $Id: ConnectionPool.java,v 1.3 2005/09/11 18:35:52 oone Exp $
  * ======================================================================
  *
  * JRig - Java Relational Information Generator
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 /*
- * $Id: ConnectionPool.java,v 1.2 2005/09/11 08:13:16 oone Exp $
+ * $Id: ConnectionPool.java,v 1.3 2005/09/11 18:35:52 oone Exp $
  * ======================================================================
  *
  * Copyright (c) 2000-2004 TBCommerce Network Corp, All rights reserved.
@@ -37,6 +37,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import de.berlios.jrig.util.ClassLoaderUtil;
 import de.berlios.jrig.util.JdbcUtil;
 
@@ -44,9 +46,11 @@ import de.berlios.jrig.util.JdbcUtil;
  * This is a simple Connection Pool implementation.
  *
  * @author <a href="mailto:jrig.admin@gmail.com">Anthony Xin Chen</a>
- * @version $Revision: 1.2 $ $Date: 2005/09/11 08:13:16 $
+ * @version $Revision: 1.3 $ $Date: 2005/09/11 18:35:52 $
  */
 public class ConnectionPool {
+    
+    static final Logger LOG = Logger.getLogger(ConnectionPool.class);
     
     private static final int DEFAULT_POOL_SIZE = 2;
     
@@ -125,7 +129,15 @@ public class ConnectionPool {
     }
     
     private void initDriver() throws ClassNotFoundException {
-        Class.forName(this.driver);
+        LOG.info("Initiating driver: " + this.driver);
+        
+        try {
+            Class.forName(this.driver);
+        }
+        catch (ClassNotFoundException ex) {
+            LOG.warn("JDBC driver not found. Make sure it is in the classpath.");
+            throw ex;
+        }
     }
     
     /**
@@ -178,6 +190,10 @@ public class ConnectionPool {
     public synchronized void returnConnection(PoolableConnection pc) {
  
         if (this.connections.size() > DEFAULT_POOL_SIZE) {
+            
+            LOG.debug("pool size is " + this.connections.size());
+            LOG.debug("may need to increase the default pool size due to the usage pattern");
+            
             Connection conn = pc.getUnderlyingConnection();
             JdbcUtil.closeConnection(conn);
             this.connections.remove(pc);
