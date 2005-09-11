@@ -1,5 +1,5 @@
 /*
- * $Id: ConnectionPool.java,v 1.1 2005/09/11 07:51:50 oone Exp $
+ * $Id: ConnectionPool.java,v 1.2 2005/09/11 08:13:16 oone Exp $
  * ======================================================================
  *
  * JRig - Java Relational Information Generator
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 /*
- * $Id: ConnectionPool.java,v 1.1 2005/09/11 07:51:50 oone Exp $
+ * $Id: ConnectionPool.java,v 1.2 2005/09/11 08:13:16 oone Exp $
  * ======================================================================
  *
  * Copyright (c) 2000-2004 TBCommerce Network Corp, All rights reserved.
@@ -44,7 +44,7 @@ import de.berlios.jrig.util.JdbcUtil;
  * This is a simple Connection Pool implementation.
  *
  * @author <a href="mailto:jrig.admin@gmail.com">Anthony Xin Chen</a>
- * @version $Revision: 1.1 $ $Date: 2005/09/11 07:51:50 $
+ * @version $Revision: 1.2 $ $Date: 2005/09/11 08:13:16 $
  */
 public class ConnectionPool {
     
@@ -89,8 +89,6 @@ public class ConnectionPool {
     
     private String driver;
     private String url;
-    private String user;
-    private String password; 
     
     private Properties info;
     
@@ -118,12 +116,12 @@ public class ConnectionPool {
             String aUser, 
             String aPassword) throws ClassNotFoundException {
         
-        this.driver = aDriver;
-        this.url = aUrl;
-        this.user = aUser;
-        this.password = aPassword;
+        Properties p = new Properties();
         
-        initDriver();
+        p.put("user", aUser);
+        p.put("password", aPassword);
+        
+        init(aDriver, aUrl, p);
     }
     
     private void initDriver() throws ClassNotFoundException {
@@ -169,12 +167,7 @@ public class ConnectionPool {
      * @throws SQLException
      */
     private Connection getRealConnection() throws SQLException {
-        if (this.info != null) {
-            return DriverManager.getConnection(this.url, this.info);
-        }
-        else {
-            return DriverManager.getConnection(this.url, this.user, this.password);
-        }
+        return DriverManager.getConnection(this.url, this.info);
     }
      
     /**
