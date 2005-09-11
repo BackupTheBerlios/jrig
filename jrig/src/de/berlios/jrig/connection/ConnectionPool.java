@@ -1,5 +1,5 @@
 /*
- * $Id: ConnectionPool.java,v 1.3 2005/09/11 18:35:52 oone Exp $
+ * $Id: ConnectionPool.java,v 1.4 2005/09/11 19:15:27 oone Exp $
  * ======================================================================
  *
  * JRig - Java Relational Information Generator
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 /*
- * $Id: ConnectionPool.java,v 1.3 2005/09/11 18:35:52 oone Exp $
+ * $Id: ConnectionPool.java,v 1.4 2005/09/11 19:15:27 oone Exp $
  * ======================================================================
  *
  * Copyright (c) 2000-2004 TBCommerce Network Corp, All rights reserved.
@@ -31,7 +31,6 @@ package de.berlios.jrig.connection;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Properties;
@@ -39,14 +38,14 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import de.berlios.jrig.jdbc.JdbcUtil;
 import de.berlios.jrig.util.ClassLoaderUtil;
-import de.berlios.jrig.util.JdbcUtil;
 
 /**
  * This is a simple Connection Pool implementation.
  *
  * @author <a href="mailto:jrig.admin@gmail.com">Anthony Xin Chen</a>
- * @version $Revision: 1.3 $ $Date: 2005/09/11 18:35:52 $
+ * @version $Revision: 1.4 $ $Date: 2005/09/11 19:15:27 $
  */
 public class ConnectionPool {
     
@@ -158,7 +157,7 @@ public class ConnectionPool {
             }
         }
         
-        Connection conn = getRealConnection();
+        Connection conn = JdbcUtil.getConnection(this.url, this.info);
         
         pc = (PoolableConnection) Proxy.newProxyInstance(
             ClassLoaderUtil.getClassLoader(PoolableConnection.class), 
@@ -171,17 +170,7 @@ public class ConnectionPool {
         
         return pc;
     } 
-    
-    /**
-     * Retrieves an actual database connection.
-     * 
-     * @return
-     * @throws SQLException
-     */
-    private Connection getRealConnection() throws SQLException {
-        return DriverManager.getConnection(this.url, this.info);
-    }
-     
+         
     /**
      * Return the poolable connection to the pool.
      * 

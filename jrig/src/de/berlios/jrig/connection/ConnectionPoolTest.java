@@ -1,5 +1,5 @@
 /*
- * $Id: ConnectionPoolTest.java,v 1.1 2005/09/11 07:51:50 oone Exp $
+ * $Id: ConnectionPoolTest.java,v 1.2 2005/09/11 19:15:27 oone Exp $
  * ======================================================================
  *
  * JRig - Java Relational Information Generator
@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 /*
- * $Id: ConnectionPoolTest.java,v 1.1 2005/09/11 07:51:50 oone Exp $
+ * $Id: ConnectionPoolTest.java,v 1.2 2005/09/11 19:15:27 oone Exp $
  * ======================================================================
  *
  * Copyright (c) 2000-2004 TBCommerce Network Corp, All rights reserved.
@@ -33,13 +33,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
-import de.berlios.jrig.util.JdbcUtil;
+import de.berlios.jrig.jdbc.JdbcUtil;
 
 /**
  *
  *
  * @author <a href="mailto:jrig.admin@gmail.com">Anthony Xin Chen</a>
- * @version $Revision: 1.1 $ $Date: 2005/09/11 07:51:50 $
+ * @version $Revision: 1.2 $ $Date: 2005/09/11 19:15:27 $
  */
 public class ConnectionPoolTest extends TestCase {
 
